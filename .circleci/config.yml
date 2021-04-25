@@ -1,0 +1,30 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.8.3
+    steps:
+      - checkout
+      - run:
+          name: Show files
+          command: |
+            ls -al  
+      - setup_remote_docker:
+          version: 19.03.13
+      - run:
+          name: Zip files
+          command: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+            sudo apt-get update -y
+            sudo apt-get install -y less
+            ls -al
+      - run:
+          name : Docker Operations
+          command: |
+            echo "LOG IN COMPLETED" | docker login -u=$DockerUsername -p=$DockerPassword
+            ls -al
+            docker build -f uber-backend/Dockerfile -t $DockerUsername/uberbusapp:backend .
+            sleep 120
+            docker push $DockerUsername/uberbusapp:backend
