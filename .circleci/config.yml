@@ -62,6 +62,6 @@ jobs:
             kubectl apply -f frontend-deployment.yaml
             sleep 10
             kubectl get deployments
-            kubectl apply -f froentend-service-lb.yaml
+            kubectl apply -f frontend-service-lb.yaml
             sleep 10
             kubectl get svc
