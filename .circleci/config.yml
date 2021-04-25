@@ -52,10 +52,16 @@ jobs:
             kubectl apply -f config-map-aws-auth.yml
             sleep 10
             kubectl get nodes
-            # cd back-end/
-            # kubectl apply -f be-uber-deployment.yaml
-            # sleep 10
-            # kubectl get deployments
-            # kubectl apply -f be-uber-service.yaml
-            # sleep 10
-            # kubectl get svc
+            cd K8S/
+            kubectl apply -f backend-deployment.yaml
+            sleep 10
+            kubectl get deployments
+            kubectl apply -f backend-service-lb.yaml
+            sleep 10
+            kubectl get svc
+            kubectl apply -f frontend-deployment.yaml
+            sleep 10
+            kubectl get deployments
+            kubectl apply -f froentend-service-lb.yaml
+            sleep 10
+            kubectl get svc
