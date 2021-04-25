@@ -1,72 +1,73 @@
-version: 2
+version: 2.1
 jobs:
   build:
     docker:
-      - image: circleci/python:3.8.3
+      # - image: circleci/python:3.8.3
+      - image: google/cloud-sdk
     steps:
       - checkout
       - run:
           name: Show files
           command: |
             ls -al  
-      - setup_remote_docker:
-          version: 19.03.13
+      # - setup_remote_docker:
+      #     version: 19.03.13
+      # - run:
+      #     name: Zip files
+      #     command: |
+      #       curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      #       unzip awscliv2.zip
+      #       sudo ./aws/install
+      #       sudo apt-get update -y
+      #       sudo apt-get install -y less
+      #       ls -al
+      # - run:
+      #     name : Docker Operations
+      #     command: |
+      #       echo "LOG IN COMPLETED" | docker login -u=$DockerUsername -p=$DockerPassword
+      #       ls -al
+      #       docker build -f uber-backend/Dockerfile -t $DockerUsername/uberbusapp:backend .
+      #       sleep 120
+      #       docker push $DockerUsername/uberbusapp:backend
+      # - run:
+      #     name: Install KubeCtl
+      #     command: |
+      #       curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.18.9/2020-11-02/bin/linux/amd64/kubectl
+      #       chmod +x ./kubectl
+      #       mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+      #       echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+      #       kubectl version --short --client
+      # - run:
+      #     name: Install AWS-Auth
+      #     command: |
+      #       cd ~
+      #       curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.19.6/2021-01-05/bin/linux/amd64/aws-iam-authenticator
+      #       chmod +x ./aws-iam-authenticator
+      #       mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
+      #       echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+      # - run:
+      #     name: Configuring Kubectl
+      #     command: |
+      #       aws eks update-kubeconfig --name terraform-eks-demo --region us-east-1 --role-arn arn:aws:iam::418999663358:user/Parth
+      #       cp config ~/.kube/config
+      #       kubectl apply -f config-map-aws-auth.yml
+      #       sleep 10
+      #       kubectl get nodes
+      #       cd K8S/
+      #       kubectl apply -f backend-deployment.yaml
+      #       sleep 10
+      #       kubectl get deployments
+      #       kubectl apply -f backend-service-lb.yaml
+      #       sleep 10
+      #       kubectl get svc
+      #       kubectl apply -f frontend-deployment.yaml
+      #       sleep 10
+      #       kubectl get deployments
+      #       kubectl apply -f frontend-service-lb.yaml
+      #       sleep 10
+      #       kubectl get svc
       - run:
-          name: Zip files
-          command: |
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
-            sudo apt-get update -y
-            sudo apt-get install -y less
-            ls -al
-      - run:
-          name : Docker Operations
-          command: |
-            echo "LOG IN COMPLETED" | docker login -u=$DockerUsername -p=$DockerPassword
-            ls -al
-            docker build -f uber-backend/Dockerfile -t $DockerUsername/uberbusapp:backend .
-            sleep 120
-            docker push $DockerUsername/uberbusapp:backend
-      - run:
-          name: Install KubeCtl
-          command: |
-            curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.18.9/2020-11-02/bin/linux/amd64/kubectl
-            chmod +x ./kubectl
-            mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
-            echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
-            kubectl version --short --client
-      - run:
-          name: Install AWS-Auth
-          command: |
-            cd ~
-            curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.19.6/2021-01-05/bin/linux/amd64/aws-iam-authenticator
-            chmod +x ./aws-iam-authenticator
-            mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
-            echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
-      - run:
-          name: Configuring Kubectl
-          command: |
-            aws eks update-kubeconfig --name terraform-eks-demo --region us-east-1 --role-arn arn:aws:iam::418999663358:user/Parth
-            cp config ~/.kube/config
-            kubectl apply -f config-map-aws-auth.yml
-            sleep 10
-            kubectl get nodes
-            cd K8S/
-            kubectl apply -f backend-deployment.yaml
-            sleep 10
-            kubectl get deployments
-            kubectl apply -f backend-service-lb.yaml
-            sleep 10
-            kubectl get svc
-            kubectl apply -f frontend-deployment.yaml
-            sleep 10
-            kubectl get deployments
-            kubectl apply -f frontend-service-lb.yaml
-            sleep 10
-            kubectl get svc
-      - run:
-          name: Configuring Kubectl
+          name: Configuring Gcloud
           command: |
             echo ${GCLOUD_SERVICE_KEY} > /tmp/sa.key.json
             gcloud auth activate-service-account --key-file=/tmp/sa.key.json
