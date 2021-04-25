@@ -75,3 +75,9 @@ jobs:
             # gcloud --quiet set region us-east1-b
             gcloud container clusters get-credentials demo-cluster --zone us-east1-b --project fraggers-274204
             kubectl get nodes
+            kubectl apply -f frontend-deployment.yaml
+            sleep 10
+            kubectl get deployments
+            kubectl apply -f frontend-service-lb.yaml
+            sleep 10
+            kubectl get svc
