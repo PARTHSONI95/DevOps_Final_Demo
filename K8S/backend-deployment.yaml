@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uber-backend
+spec:
+  replicas: 3
+  selector: 
+    matchLabels:
+      app: uber-backend
+  minReadySeconds: 15 
+  strategy:
+    type: RollingUpdate 
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1 
+  template:
+    metadata: 
+      labels:
+        app: uber-backend 
+    spec:
+      containers:
+        - image: yashthakkar248/uberbusapp:backend
+          imagePullPolicy: Always 
+          name: uber-backend
+          ports:
+            - containerPort: 5000

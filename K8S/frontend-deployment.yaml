@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uber-frontend 
+spec:
+  replicas: 3 
+  selector: 
+    matchLabels:
+      app: uber-frontend
+  minReadySeconds: 15 
+  strategy:
+    type: RollingUpdate 
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1 
+  template:
+    metadata: 
+      labels:
+        app: uber-frontend 
+    spec:
+      containers:
+        - image: yashthakkar248/uberbusapp
+          imagePullPolicy: Always 
+          name: uber-frontend 
+          ports:
+            - containerPort: 80
