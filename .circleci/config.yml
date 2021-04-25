@@ -69,7 +69,7 @@ jobs:
       - run:
           name: Configuring Gcloud
           command: |
-            echo ${GCLOUD_SERVICE_KEY} > /tmp/sa.key.json
+            echo ${GCLOUD_KEY} > /tmp/sa.key.json
             gcloud auth activate-service-account --key-file=/tmp/sa.key.json
             # gcloud --quiet set project fraggers-274204
             # gcloud --quiet set region us-east1-b
