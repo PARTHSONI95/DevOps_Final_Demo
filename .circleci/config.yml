@@ -65,3 +65,12 @@ jobs:
             kubectl apply -f frontend-service-lb.yaml
             sleep 10
             kubectl get svc
+      - run:
+          name: Configuring Kubectl
+          command: |
+            echo ${GCLOUD_SERVICE_KEY} > /tmp/sa.key.json
+            gcloud auth activate-service-account --key-file=/tmp/sa.key.json
+            gcloud set project fraggers-274204
+            gcloud set region us-east1-b
+            gcloud container clusters get-credentials demo-cluster --zone us-east1-b --project fraggers-274204
+            kubectl get nodes
