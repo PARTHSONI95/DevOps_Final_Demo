@@ -69,10 +69,9 @@ jobs:
       - run:
           name: Configuring Gcloud
           command: |
-            gcloud components update -y
             echo ${GCLOUD_SERVICE_KEY} > /tmp/sa.key.json
             gcloud auth activate-service-account --key-file=/tmp/sa.key.json
-            gcloud set project fraggers-274204
-            gcloud set region us-east1-b
+            # gcloud set project fraggers-274204
+            # gcloud set region us-east1-b
             gcloud container clusters get-credentials demo-cluster --zone us-east1-b --project fraggers-274204
             kubectl get nodes
