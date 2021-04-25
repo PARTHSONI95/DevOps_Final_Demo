@@ -71,7 +71,7 @@ jobs:
           command: |
             echo ${GCLOUD_SERVICE_KEY} > /tmp/sa.key.json
             gcloud auth activate-service-account --key-file=/tmp/sa.key.json
-            gcloud --quiet set project fraggers-274204
-            gcloud --quiet set region us-east1-b
+            # gcloud --quiet set project fraggers-274204
+            # gcloud --quiet set region us-east1-b
             gcloud container clusters get-credentials demo-cluster --zone us-east1-b --project fraggers-274204
             kubectl get nodes
