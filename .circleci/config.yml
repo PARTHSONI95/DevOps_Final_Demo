@@ -69,7 +69,7 @@ jobs:
       - run:
           name: Configuring Gcloud
           command: |
-            gcloud components update
+            gcloud components update -y
             echo ${GCLOUD_SERVICE_KEY} > /tmp/sa.key.json
             gcloud auth activate-service-account --key-file=/tmp/sa.key.json
             gcloud set project fraggers-274204
