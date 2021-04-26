@@ -12,7 +12,7 @@
 # CMD gunicorn --threads=3 --bind 0.0.0.0:5000 wsgi:app
 #ENTRYPOINT ["python"]
 #CMD ["uberbe.py"]
-FROM python:3.9-slim-buster
+FROM python:3.8-slim
 WORKDIR /app
 ADD . .
 #RUN apk update
