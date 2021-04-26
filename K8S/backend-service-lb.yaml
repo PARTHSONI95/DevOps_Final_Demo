@@ -3,9 +3,10 @@ kind: Service
 metadata:
   name: uber-backend
 spec:
+  type: LoadBalancer
   ports:
     - port: 80
       protocol: TCP
-      # targetPort: 5000 
+      targetPort: 5000 
   selector:
     app: uber-backend
