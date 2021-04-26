@@ -20,6 +20,10 @@ from bson.objectid import ObjectId
 # straight mongo access
 from pymongo import MongoClient
 
+# For JWT
+import jwt
+
+
 # mongo
 #mongo_client = MongoClient('mongodb://localhost:27017/')
 #mongo_client = MongoClient("mongodb+srv://admin:admin@tweets.8ugzv.mongodb.net/tweets?retryWrites=true&w=majority")
@@ -152,7 +156,7 @@ def validateUser(username, password):
 def sign_user_in():
     username = request.json['username']
     password = request.json['password']
-    authenticate = dict(username=username, password=password)
+    #authenticate = dict(username=username, password=password)
     # validate correct user or not
     print('before calling validation:::')
     userCheck = validateUser(username, password)
@@ -166,13 +170,54 @@ def sign_user_in():
     if not checkAlreadySignORNot:
         user = dict(username=username, signIn=True)
         print(user)
+        token = jwt.encode({
+            'username': username,
+            'password': password,
+            'exp' : datetime.utcnow() + timedelta(minutes = 30)
+        }, 'parth')
         updateSignIn(user)
-        return jsonify(user)
+        return jsonify({'user':user,'token' : token})
+        #return jsonify(user)
     else:
         return jsonify('User Already Sign In')
 
 
 # endpoint to create new user
+# endpoint to sign in the user
+@app.route("/fastLogin", methods=["POST"])
+def sign_user_directly():
+
+    token = request.json['x-access-token']
+    print("Token :: " + token)
+    if not token:
+        return jsonify('Token is missing')
+    
+    try:
+        data = jwt.decode(token, 'parth',algorithms=["HS256"])
+        username = data['username']
+        password = data['password']
+        print('Username' , username)
+        print('Password', password)
+        userCheck = validateUser(username, password)
+        if userCheck == 0:
+            return jsonify('Invalid Login')
+        print('Validating User:::')
+        print(userCheck)
+        # check user sign in or not
+        checkAlreadySignORNot = checkUserSignIn("username", username)
+        print(checkAlreadySignORNot)
+        if not checkAlreadySignORNot:
+            user = dict(username=username, signIn=True)
+            print(user)
+            updateSignIn(user)
+            return jsonify({'user':user})
+            #return jsonify(user)
+        else:
+            return jsonify('User Already Sign In')
+
+    except:
+        print(sys.exc_info()[0])
+        return jsonify('Token is invalid')
 
 
 @app.route("/insertUser", methods=["POST"])
