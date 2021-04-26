@@ -105,5 +105,5 @@ workflows:
     jobs:
       - build
       - build_frontend_deploy
-          requres:
+          requires:
             -build
