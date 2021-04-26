@@ -104,6 +104,6 @@ workflows:
   build_and_test:
     jobs:
       - build
-      - build_frontend_deploy
-          requires:
-            -build
+      - build_frontend_deploy:
+        requires:
+          - build
