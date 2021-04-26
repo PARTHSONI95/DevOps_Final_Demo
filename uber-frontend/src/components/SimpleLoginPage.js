@@ -1,7 +1,6 @@
 import React from 'react';
 import "@patternfly/react-core/dist/styles/base.css";
 import brandImg from './mbta-logo@logotyp.us.svg';
-import { useHistory } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -11,9 +10,8 @@ import {
   LoginMainFooterBandItem,
   LoginMainFooterLinksItem,
   LoginPage,
-  BackgroundImage,
   ListItem,
-  Spinner
+  Button
 } from '@patternfly/react-core';
 import ExclamationCircleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-circle-icon';
 
@@ -31,7 +29,7 @@ export default class SimpleLoginPage extends React.Component {
       isRememberMeChecked: false,
       user: localStorage.getItem('role'),
       token: localStorage.getItem('bustoken'),
-      FLASK_URL: process.env.FLASK_URL || 'http://localhost:5000'
+      FLASK_URL: process.env.REACT_APP_URL || 'http://localhost:5000'
     };
 
     this.componentDidMount = () => {
@@ -72,7 +70,7 @@ export default class SimpleLoginPage extends React.Component {
       console.log("Before User" + storedUser);
       // verify user/pwd
 
-      if (typeof (this.state.usernameValue) === 'undefined' || typeof (this.state.passwordValue) === 'undefined' || this.state.usernameValue == '' || this.state.passwordValue == '') {
+      if (typeof (this.state.usernameValue) === 'undefined' || typeof (this.state.passwordValue) === 'undefined' || this.state.usernameValue === '' || this.state.passwordValue === '') {
         alert('Please enter valid details');
         return;
       }
@@ -104,12 +102,12 @@ export default class SimpleLoginPage extends React.Component {
             const data = await response.json();
             console.log("on reply:")
             console.log(data);
-            if(data == "User Already Sign In"){
+            if(data === "User Already Sign In"){
               alert('Already Logged In')
               this.props.history.push('/home');
               return "Already Logged In";
 
-            }else if(data == "Invalid Login"){
+            }else if(data === "Invalid Login"){
               alert('Invalid Login');
               return;
             }else{
@@ -179,12 +177,12 @@ export default class SimpleLoginPage extends React.Component {
             const data = await response.json();
             console.log("on reply:")
             console.log(data);
-            if(data == "User Already Sign In"){
+            if(data === "User Already Sign In"){
               alert('Already Logged In')
               this.props.history.push('/home');
               return "Already Logged In";
 
-            }else if(data == "Token is invalid"){
+            }else if(data === "Token is invalid"){
               alert('Token is invalid');
               return;
             }else{
@@ -257,7 +255,7 @@ export default class SimpleLoginPage extends React.Component {
     );
     const forgotCredentials = (
       <LoginMainFooterBandItem>
-        <a href="#" onClick={() => this.handleDirectLogin()}>Direct Login ? Click here...</a>
+        <Button onClick={() => this.handleDirectLogin()}>Direct Login ? Click here...</Button>
       </LoginMainFooterBandItem>
     );
 

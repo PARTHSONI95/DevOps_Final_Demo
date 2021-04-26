@@ -1,11 +1,9 @@
-import logo from './logo.svg';
 import '@patternfly/react-core/dist/styles/base.css';
 import SimpleLoginPage from './components/SimpleLoginPage.js';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link,
   Redirect
 } from "react-router-dom";
 import React from 'react';

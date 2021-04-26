@@ -1,6 +1,6 @@
 import React from 'react';
 import { Bullseye } from '@patternfly/react-core';
-import { Form, FormGroup, TextInput, Checkbox, Popover, ActionGroup, Button } from '@patternfly/react-core';
+import { Form, FormGroup, TextInput, Popover, ActionGroup, Button } from '@patternfly/react-core';
 import HelpIcon from '@patternfly/react-icons/dist/js/icons/help-icon';
 
 export default class SignUp extends React.Component {
@@ -10,11 +10,11 @@ export default class SignUp extends React.Component {
       value1: '',
       value2: '',
       value3: '',
-      FLASK_URL: process.env.FLASK_URL || 'http://localhost:5000'
+      FLASK_URL: process.env.REACT_APP_URL || 'http://localhost:5000'
     };
     this.handleTextInputChange1 = value1 => {
       this.setState({ value1 });
-      console.log(this.state.value1);
+      //console.log(this.state.value1);
     };
     this.handleTextInputChange2 = value2 => {
       this.setState({ value2 });
@@ -96,11 +96,11 @@ export default class SignUp extends React.Component {
               headerContent={
                 <div>
                   The{' '}
-                  <a href="https://schema.org/name" target="_blank">
+                  <a href="https://schema.org/name" target="_blank" rel="noreferrer">
                     name
                   </a>{' '}
                   of a{' '}
-                  <a href="https://schema.org/Person" target="_blank">
+                  <a href="https://schema.org/Person" target="_blank" rel="noreferrer">
                     Person
                   </a>
                 </div>
@@ -108,11 +108,11 @@ export default class SignUp extends React.Component {
               bodyContent={
                 <div>
                   Often composed of{' '}
-                  <a href="https://schema.org/givenName" target="_blank">
+                  <a href="https://schema.org/givenName" target="_blank" rel="noreferrer">
                     givenName
                   </a>{' '}
                   and{' '}
-                  <a href="https://schema.org/familyName" target="_blank">
+                  <a href="https://schema.org/familyName" target="_blank" rel="noreferrer">
                     familyName
                   </a>
                   .

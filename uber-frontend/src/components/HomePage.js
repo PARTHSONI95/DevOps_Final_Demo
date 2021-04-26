@@ -11,13 +11,19 @@ import {
     PageSectionVariants,
     PageSidebar,
     PageHeaderTools,
-    Progress,
     SelectOption,
     Text,
     TextContent,
     Select, 
     SelectVariant,
+    EmptyState,
+  EmptyStatePrimary,
+  EmptyStateIcon,
+  EmptyStateBody,
+  Title
   } from '@patternfly/react-core';
+  import SearchIcon from '@patternfly/react-icons/dist/js/icons/search-icon';
+
   import ArrowRightIcon from '@patternfly/react-icons/dist/js/icons/arrow-right-icon';
   import { DatePicker } from '@patternfly/react-core';
   import { TableComposable, Thead, Tbody, Tr, Th, Td } from '@patternfly/react-table';
@@ -61,7 +67,7 @@ export default class HomePage extends React.Component {
       searchFlag: true,
       bookHistoryFlag: false,
       bookings: [],
-      FLASK_URL: process.env.FLASK_URL || 'http://localhost:5000'
+      FLASK_URL: process.env.REACT_APP_URL || 'http://localhost:5000'
     };
 
     this.onNavSelect = result => {
@@ -89,6 +95,7 @@ export default class HomePage extends React.Component {
          this.setState({
           bookings:[]
         });
+        
          return;
        }
        const paramdict = {
@@ -114,6 +121,7 @@ export default class HomePage extends React.Component {
          this.setState({
           bookings:data
         });
+        console.log(this.state.bookings);
         return;
        } catch (err) {
          console.log(err);
@@ -232,7 +240,7 @@ export default class HomePage extends React.Component {
     console.log("Destination : " + this.state.destination)
     console.log("Date : " + this.state.journeyDate)
 
-    if(this.state.source=='' || this.state.destination==''){
+    if(this.state.source==='' || this.state.destination===''){
       toast("Invalid details");
       return;
     }
@@ -275,6 +283,7 @@ export default class HomePage extends React.Component {
             avail: data
         });
         //setAvail([...data]);
+        
       } catch (err) {
         console.log(err);
         alert("exception on reply!");
@@ -292,7 +301,7 @@ export default class HomePage extends React.Component {
       const loggedInUser = localStorage.getItem("role");
       console.log('User state value is ' + this.state.username);
 
-      if(loggedInUser == null || typeof(loggedInUser)=='Undefined'){
+      if(loggedInUser === null || typeof(loggedInUser)===undefined){
         alert('Please sign in first');
         return;
       }
@@ -363,7 +372,7 @@ export default class HomePage extends React.Component {
         const data = await response.json();
         console.log("on reply:")
         console.log(data);
-        if (data == "User Already Logged Out") {
+        if (data === "User Already Logged Out") {
           alert('Already Logged Out')
           return "<h1>Already Logged Out</h1>";
         } else {
@@ -429,7 +438,7 @@ export default class HomePage extends React.Component {
 
       const Header = (
         <PageHeader
-          logo="Boston Bus Services"
+          logo="MBTA"
           logoProps={logoProps}
           headerTools={<PageHeaderTools> {this.state.username == null? (<a href="/">Sign In</a>) :("Signed In As : " + this.state.username)}</PageHeaderTools>}
           showNavToggle
@@ -530,8 +539,22 @@ export default class HomePage extends React.Component {
 
         </PageSection>
         </div>}
-
-        {bookHistoryFlag &&
+        {bookHistoryFlag && bookings.length === 0 &&
+                   <PageSection>
+                   <EmptyState>
+                      <EmptyStateIcon icon={SearchIcon} />
+                      <Title size="lg" headingLevel="h4">
+                        No results found
+                      </Title>
+                      <EmptyStateBody>
+                        No results match the filter criteria. Remove all filters or clear all filters to show results.
+                      </EmptyStateBody>
+                      <EmptyStatePrimary>
+                        <Button variant="link">Clear all filters</Button>
+                      </EmptyStatePrimary>
+                    </EmptyState>
+           </PageSection>}          
+        {bookHistoryFlag && bookings !== [] &&
                    <PageSection>
                    <TableComposable aria-label="Bookings table">
                <Thead>
