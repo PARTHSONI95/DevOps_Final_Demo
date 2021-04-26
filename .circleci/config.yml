@@ -2,8 +2,8 @@ version: 2.1
 jobs:
   build:
     docker:
-      # - image: circleci/python:3.8.3
-      - image: google/cloud-sdk
+       - image: circleci/python:3.8.3
+      # - image: google/cloud-sdk
     steps:
       - checkout
       - run:
@@ -66,6 +66,11 @@ jobs:
             kubectl apply -f frontend-service-lb.yaml
             sleep 10
             kubectl get svc
+  build_frontend_deploy:
+    docker:
+       - image: google/cloud-sdk
+    steps:
+      - checkout
       - run:
           name: Configuring Gcloud
           command: |
