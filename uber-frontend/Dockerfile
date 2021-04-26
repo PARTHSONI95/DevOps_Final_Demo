@@ -1,4 +1,5 @@
 FROM nginx
+RUN npm run-script build
 COPY build /usr/share/nginx/html
 ARG REACT_APP_URL
 ENV REACT_APP_URL $REACT_APP_URL
