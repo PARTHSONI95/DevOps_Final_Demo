@@ -87,3 +87,9 @@ jobs:
             kubectl apply -f frontend-service-lb.yaml
             sleep 10
             kubectl get svc
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - build_frontend_deploy
