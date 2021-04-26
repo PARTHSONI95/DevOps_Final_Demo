@@ -42,7 +42,7 @@ jobs:
             cd uber-backend
             echo "LOG IN COMPLETED" | docker login -u=$DockerUsername -p=$DockerPassword
             ls -al
-            docker build -f uber-backend/Dockerfile -t $DockerUsername/uberbusapp:backend .
+            docker build -f Dockerfile -t $DockerUsername/uberbusapp:backend .
             sleep 120
             docker push $DockerUsername/uberbusapp:backend
       - run:
