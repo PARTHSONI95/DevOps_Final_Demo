@@ -1,6 +1,6 @@
 import React from 'react';
 import { Bullseye } from '@patternfly/react-core';
-import { Form, FormGroup, TextInput, Checkbox, Popover, ActionGroup, Button } from '@patternfly/react-core';
+import { Form, FormGroup, TextInput, Popover, ActionGroup, Button } from '@patternfly/react-core';
 import HelpIcon from '@patternfly/react-icons/dist/js/icons/help-icon';
 
 export default class SignUp extends React.Component {
@@ -9,10 +9,12 @@ export default class SignUp extends React.Component {
     this.state = {
       value1: '',
       value2: '',
-      value3: ''
+      value3: '',
+      FLASK_URL: process.env.REACT_APP_URL || 'http://localhost:5000'
     };
     this.handleTextInputChange1 = value1 => {
       this.setState({ value1 });
+      //console.log(this.state.value1);
     };
     this.handleTextInputChange2 = value2 => {
       this.setState({ value2 });
@@ -23,6 +25,53 @@ export default class SignUp extends React.Component {
 
     this.handleHistory = () => {
       this.props.history.goBack();
+    };
+
+    this.handleSignUp = async (event) => {
+      event.preventDefault();
+
+      // register new user!
+    //.. return userid
+      const paramdict = {
+        'username': this.state.value1,
+        'password': this.state.value3,
+        'emailid': this.state.value2
+      }
+
+      try {
+        const config = {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(paramdict)
+        }
+        const response = await fetch(this.state.FLASK_URL+'/insertUser', config);
+        //const json = await response.json()
+        if (response.ok) {
+          console.log("success on send.");
+
+        } else {
+          alert("launch: failure on send!");
+        }
+        try {
+          const data = await response.json();
+          console.log("on reply:")
+          console.log(data);
+          alert(data);
+          this.props.history.push('/');
+          return;
+
+        } catch (err) {
+          console.log(err);
+          alert("exception on reply!");
+          return;
+        }
+
+      } catch (error) {
+
+      }
     };
   }
 
@@ -37,7 +86,9 @@ export default class SignUp extends React.Component {
       backgroundColor: 'white',
       margin: "20px 20px 20px 20px",
       padding: "20px 20px 20px 20px"
-    }}>
+    }}
+    onSubmit = {this.handleSignUp} noValidate
+    >
         <FormGroup
           label="User Name"
           labelIcon={
@@ -45,11 +96,11 @@ export default class SignUp extends React.Component {
               headerContent={
                 <div>
                   The{' '}
-                  <a href="https://schema.org/name" target="_blank">
+                  <a href="https://schema.org/name" target="_blank" rel="noreferrer">
                     name
                   </a>{' '}
                   of a{' '}
-                  <a href="https://schema.org/Person" target="_blank">
+                  <a href="https://schema.org/Person" target="_blank" rel="noreferrer">
                     Person
                   </a>
                 </div>
@@ -57,11 +108,11 @@ export default class SignUp extends React.Component {
               bodyContent={
                 <div>
                   Often composed of{' '}
-                  <a href="https://schema.org/givenName" target="_blank">
+                  <a href="https://schema.org/givenName" target="_blank" rel="noreferrer">
                     givenName
                   </a>{' '}
                   and{' '}
-                  <a href="https://schema.org/familyName" target="_blank">
+                  <a href="https://schema.org/familyName" target="_blank" rel="noreferrer">
                     familyName
                   </a>
                   .

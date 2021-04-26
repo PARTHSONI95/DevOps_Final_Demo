@@ -1,114 +1,73 @@
 import React from 'react';
 import {
-  Avatar,
-  Brand,
-  Breadcrumb,
-  BreadcrumbItem,
-  Button,
-  ButtonVariant,
-  Dropdown,
-  Card,
-  CardBody,
-  DataList,
-  DataListAction,
-  DataListCell,
-  DataListItem,
-  DataListItemCells,
-  DataListItemRow,
-  Toolbar,
-  ToolbarItem,
-  ToolbarContent,
-  ToolbarToggleGroup,
-  ToolbarGroup,
-  Divider,
-  Drawer,
-  DrawerActions,
-  DrawerCloseButton,
-  DrawerContent,
-  DrawerContentBody,
-  DrawerHead,
-  DrawerPanelBody,
-  DrawerPanelContent,
-  DropdownToggle,
-  DropdownItem,
-  DropdownSeparator,
-  Flex,
-  FlexItem,
-  Gallery,
-  GalleryItem,
-  InputGroup,
-  KebabToggle,
-  Nav,
-  NavItem,
-  NavList,
-  Page,
-  PageHeader,
-  PageSection,
-  PageSectionVariants,
-  PageSidebar,
-  Progress,
-  Select,
-  SelectOption,
-  SkipToContent,
-  Stack,
-  StackItem,
-  Text,
-  TextContent,
-  TextInput,
+    Button,
+    Divider,
+    Nav,
+    NavItem,
+    NavList,
+    Page,
+    PageHeader,
+    PageSection,
+    PageSectionVariants,
+    PageSidebar,
+    PageHeaderTools,
+    SelectOption,
+    Text,
+    TextContent,
+    Select, 
+    SelectVariant,
+    EmptyState,
+  EmptyStatePrimary,
+  EmptyStateIcon,
+  EmptyStateBody,
   Title
-} from '@patternfly/react-core';
+  } from '@patternfly/react-core';
+  import SearchIcon from '@patternfly/react-icons/dist/js/icons/search-icon';
 
-import imgBrand from './brandImgColor.svg';
-import BellIcon from '@patternfly/react-icons/dist/js/icons/bell-icon';
-import CodeBranchIcon from '@patternfly/react-icons/dist/js/icons/code-branch-icon';
-import CodeIcon from '@patternfly/react-icons/dist/js/icons/code-icon';
-import CogIcon from '@patternfly/react-icons/dist/js/icons/cog-icon';
-import CubeIcon from '@patternfly/react-icons/dist/js/icons/cube-icon';
-import CheckCircleIcon from '@patternfly/react-icons/dist/js/icons/check-circle-icon';
-import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
-import FilterIcon from '@patternfly/react-icons/dist/js/icons/filter-icon';
-import SearchIcon from '@patternfly/react-icons/dist/js/icons/search-icon';
-import TimesCircleIcon from '@patternfly/react-icons/dist/js/icons/times-circle-icon';
+  import ArrowRightIcon from '@patternfly/react-icons/dist/js/icons/arrow-right-icon';
+  import { DatePicker } from '@patternfly/react-core';
+  import { TableComposable, Thead, Tbody, Tr, Th, Td } from '@patternfly/react-table';
+  import { ToastContainer, toast } from 'react-toastify';
+  import 'react-toastify/dist/ReactToastify.css';
+
 
 export default class HomePage extends React.Component {
   constructor(props) {
     super(props);
+    this.options = [
+      <SelectOption key={0} value="Haymarket Square" />,
+      <SelectOption key={1} value="Back Bay" />,
+      <SelectOption key={2} value="North End" />,
+      <SelectOption key={3} value="North Station" />,
+      <SelectOption key={4} value="Beacon Hill" />,
+      <SelectOption key={5} value="Boston University" />
+    ];
+
+    this.Toptions = [
+        <SelectOption key={0} value="Haymarket Square" />,
+        <SelectOption key={1} value="Back Bay" />,
+        <SelectOption key={2} value="North End" />,
+        <SelectOption key={3} value="North Station" />,
+        <SelectOption key={4} value="Beacon Hill" />,
+        <SelectOption key={5} value="Boston University" />
+      ];
+
     this.state = {
-      isDrawerExpanded: false,
-      drawerPanelBodyContent: '',
-      isDropdownOpen: false,
-      isKebabDropdownOpen: false,
+      isOpen: false,
+      isTOpen: false,
+      selected: null,
+      Tselected: null,
+      isNavOpen: false,
       activeItem: 0,
-      inputValue: '',
-      statusIsExpanded: false,
-      statusSelected: null,
-      riskIsExpanded: false,
-      riskSelected: null,
-      selectedDataListItemId: ''
-    };
-
-    this.onDropdownToggle = isDropdownOpen => {
-      this.setState({
-        isDropdownOpen
-      });
-    };
-
-    this.onDropdownSelect = event => {
-      this.setState({
-        isDropdownOpen: !this.state.isDropdownOpen
-      });
-    };
-
-    this.onKebabDropdownToggle = isKebabDropdownOpen => {
-      this.setState({
-        isKebabDropdownOpen
-      });
-    };
-
-    this.onKebabDropdownSelect = event => {
-      this.setState({
-        isKebabDropdownOpen: !this.state.isKebabDropdownOpen
-      });
+      source: '',
+      destination: '',
+      journeyDate: new Date(),
+      username: localStorage.getItem("role"),
+      avail: [],
+      searchFlag: true,
+      bookHistoryFlag: false,
+      bookings: [],
+      FLASK_URL: process.env.REACT_APP_URL || 'http://localhost:5000'
     };
 
     this.onNavSelect = result => {
@@ -117,462 +76,524 @@ export default class HomePage extends React.Component {
       });
     };
 
-    this.statusOptions = [
-      { value: 'Status', disabled: false, isPlaceholder: true },
-      { value: 'New', disabled: false },
-      { value: 'Pending', disabled: false },
-      { value: 'Running', disabled: false },
-      { value: 'Cancelled', disabled: false }
-    ];
-
-    this.riskOptions = [
-      { value: 'Risk', disabled: false, isPlaceholder: true },
-      { value: 'Low', disabled: false },
-      { value: 'Medium', disabled: false },
-      { value: 'High', disabled: false }
-    ];
-
-    this.onInputChange = newValue => {
-      this.setState({ inputValue: newValue });
-    };
-
-    this.onStatusToggle = isExpanded => {
+    this.toggleSearchFlag = () => {
       this.setState({
-        statusIsExpanded: isExpanded
+        searchFlag: true,
+        bookHistoryFlag: false
+      });
+      console.log(this.state.searchFlag);
+    }
+
+    this.getBookingHistory = async () => {
+      console.log('Get History function');
+      const loggedInUser = localStorage.getItem("role");
+      console.log('User state value is ' + loggedInUser);
+
+       if(typeof(loggedInUser) == 'undefined' || loggedInUser == null){
+         console.log('Type found is null')
+         //setBookings([]);
+         this.setState({
+          bookings:[]
+        });
+        
+         return;
+       }
+       const paramdict = {
+         "username":loggedInUser
+       }
+
+     try {
+       const config = {
+         method: 'POST',
+         headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/json',
+         },
+         body: JSON.stringify(paramdict)
+       }
+       const response = await fetch(this.state.FLASK_URL+'/showBookedTickets', config);
+       //const json = await response.json()
+
+       try {
+         const data = await response.json();
+         console.log("on reply:")
+         console.log(data);
+         this.setState({
+          bookings:data
+        });
+        console.log(this.state.bookings);
+        return;
+       } catch (err) {
+         console.log(err);
+         alert("exception on reply!");
+         return;
+       }
+
+     } catch (error) {
+       console.log(error);
+       alert("exception on send");
+     }
+   }
+    
+
+    this.toggleHistoryFlag = () => {
+      this.setState({
+        bookHistoryFlag: true,
+        searchFlag: false
+      });
+      this.getBookingHistory();
+      console.log(this.state.bookHistoryFlag);
+    }
+
+
+
+    this.onDateChange = date => {
+        this.setState({
+            journeyDate: date
+          });  
+        console.log('date : ' + date)    
+    }
+
+    this.onNavToggle = () => {
+        this.setState({
+          isNavOpen: !this.state.isNavOpen
+        });
+      };
+
+   
+
+    this.onToggle = isOpen => {
+      this.setState({
+        isOpen
       });
     };
 
-    this.onStatusSelect = (event, selection, isPlaceholder) => {
-      if (isPlaceholder) this.clearStatusSelection();
+    this.onTToggle = isTOpen => {
+        this.setState({
+          isTOpen
+        });
+      };
+    
+
+    this.onSelect = (event, selection, isPlaceholder) => {
+      if (isPlaceholder) this.clearSelection();
+      else {
+        this.setState({
+          selected: selection,
+          isOpen: false,
+          source: selection
+        });
+        console.log('selected:', selection);
+      }
+    };
+
+    this.onTSelect = (event, selection, isPlaceholder) => {
+        if (isPlaceholder) this.clearTSelection();
+        else {
+          this.setState({
+            Tselected: selection,
+            isTOpen: false,
+            destination: selection
+          });
+          console.log('selected:', selection);
+        }
+      };
+
+    this.clearSelection = () => {
       this.setState({
-        statusSelected: selection,
-        statusIsExpanded: false
+        selected: null,
+        isOpen: false,
+        source: ''
       });
     };
 
-    this.clearStatusSelection = () => {
-      this.setState({
-        statusSelected: null,
-        statusIsExpanded: false
-      });
+    this.clearTSelection = () => {
+        this.setState({
+          Tselected: null,
+          isTOpen: false,
+          destination: ''
+        });
+      };
+
+    this.customFilter = e => {
+      let input;
+      try {
+        input = new RegExp(e.target.value, 'i');
+      } catch (err) {}
+      return e.target.value !== '' ? this.options.filter(child => input.test(child.props.value)) : this.options;
     };
 
-    this.onRiskToggle = isExpanded => {
-      this.setState({
-        riskIsExpanded: isExpanded
-      });
+    this.customTFilter = e => {
+        let input;
+        try {
+          input = new RegExp(e.target.value, 'i');
+        } catch (err) {}
+        return e.target.value !== '' ? this.Toptions.filter(child => input.test(child.props.value)) : this.Toptions;
+      };
+
+    this.onSearchClick = async () => {
+    const loggedInUser = localStorage.getItem("role");
+    console.log('User : ' + loggedInUser);
+
+    console.log("Input search data");
+    console.log("Source : " + this.state.source)
+    console.log("Destination : " + this.state.destination)
+    console.log("Date : " + this.state.journeyDate)
+
+    if(this.state.source==='' || this.state.destination===''){
+      toast("Invalid details");
+      return;
+    }
+
+
+    const dateSplit = this.state.journeyDate.split("-");
+    console.log(dateSplit[2])
+    const paramdict = {
+      "ticketFrom": this.state.source,
+      "ticketTo": this.state.destination,
+      "ticketDay": parseInt(dateSplit[2]),
+      "ticketMonth": parseInt(dateSplit[1])
+    }
+
+    try {
+      const config = {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(paramdict)
+      }
+      const response = await fetch(this.state.FLASK_URL+'/search', config);
+      //const json = await response.json()
+      if (response.ok) {
+        //return json
+        //return response
+        console.log("success on send.");
+
+      } else {
+        alert("launch: failure on send!");
+      }
+
+      try {
+        const data = await response.json();
+        console.log("on reply:")
+        console.log(data);
+        this.setState({
+            avail: data
+        });
+        //setAvail([...data]);
+        
+      } catch (err) {
+        console.log(err);
+        alert("exception on reply!");
+      }
+
+    } catch (error) {
+      console.log(error);
+      alert("exception on send");
+    }
+
     };
 
-    this.onRiskSelect = (event, selection, isPlaceholder) => {
-      if (isPlaceholder) this.clearRiskSelection();
-      this.setState({
-        riskSelected: selection,
-        riskIsExpanded: false
-      });
-    };
+    this.onItemClick = async (item) => {
 
-    this.clearRiskSelection = () => {
-      this.setState({
-        riskSelected: null,
-        riskIsExpanded: false
-      });
-    };
+      const loggedInUser = localStorage.getItem("role");
+      console.log('User state value is ' + this.state.username);
 
-    this.onSelectDataListItem = id => {
-      this.setState({
-        selectedDataListItemId: id,
-        isDrawerExpanded: true,
-        drawerPanelBodyContent: id.charAt(id.length - 1)
-      });
-    };
+      if(loggedInUser === null || typeof(loggedInUser)===undefined){
+        alert('Please sign in first');
+        return;
+      }
+      
 
-    this.onCloseDrawerClick = () => {
-      this.setState({
-        isDrawerExpanded: false,
-        selectedDataListItemId: ''
-      });
-    };
+      const paramdict = {
+        'username': loggedInUser,
+        'ticketFrom': item.source,
+        'ticketTo': item.destination,
+        'ticketDate': item.datetime
+      }
+      const config = {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(paramdict)
+      }
+      const response = await fetch(this.state.FLASK_URL+'/insertBook', config);
+      //const json = await response.json()
+      if (response.ok) {
+        console.log("success on send.");
+
+      } else {
+        alert("launch: failure on send!");
+      }
+      try {
+        const data = await response.json();
+        console.log("on reply:")
+        console.log(data);
+        alert(data);
+        return;
+      } catch (err) {
+        console.log(err);
+        alert("exception on reply!");
+        return;
+      }
+
+    }
+
+   this.handleLogOut = async () => {
+    const loggedInUser = localStorage.getItem("role");
+    console.log('User : ' + loggedInUser);
+
+    const paramdict = {
+      'username': loggedInUser
+    }
+
+    try {
+      const config = {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(paramdict)
+      }
+      const response = await fetch(this.state.FLASK_URL+'/userLogOut', config);
+      //const json = await response.json()
+      if (response.ok) {
+        console.log("success on send.");
+
+      } else {
+        alert("launch: failure on send!");
+      }
+      try {
+        const data = await response.json();
+        console.log("on reply:")
+        console.log(data);
+        if (data === "User Already Logged Out") {
+          alert('Already Logged Out')
+          return "<h1>Already Logged Out</h1>";
+        } else {
+          localStorage.removeItem("role");
+          //localStorage.removeItem("bustoken");
+          console.log(data.username);
+          this.props.history.push('/');
+          alert('Logout Successful');
+          return "<h1>Logout Successful</h1>";
+        }
+
+      } catch (err) {
+        console.log(err);
+        alert("exception on reply!");
+      }
+
+    } catch (error) {
+
+    }
+   };
+
   }
 
   render() {
-    const {
-      isDrawerExpanded,
-      drawerPanelBodyContent,
-      isDropdownOpen,
-      isKebabDropdownOpen,
-      activeItem,
-      inputValue,
-      statusIsExpanded,
-      statusSelected,
-      riskIsExpanded,
-      riskSelected,
-      selectedDataListItemId
-    } = this.state;
+    const { isNavOpen, activeItem, isOpen, selected, isTOpen, Tselected, avail, searchFlag, bookHistoryFlag, bookings } = this.state;
+    const titleId = 'typeahead-select-id-1';
+    const titleTId = 'typeahead-select-id-2';
+    const pageId = 'main-content-page-layout-default-nav';
+    const minDate = new Date();
+    const maxDate = new Date(2022, 8, 20);
+    const rangeValidator = date => {
+      if (date < minDate) {
+        return 'Date is before the allowable range.';
+      }
+      else if (date > maxDate) {
+        return 'Date is after the allowable range.';
+      }
+  
+      return '';
+    };
+
+    const logoProps = {
+      href: 'https://www.mbta.com/',
+      onClick: () => console.log('clicked logo'),
+      target: '_blank'
+    };
 
     const PageNav = (
-      <Nav onSelect={this.onNavSelect} aria-label="Nav">
-        <NavList>
-          <NavItem itemId={0} isActive={activeItem === 0}>
-            System Panel
-          </NavItem>
-          <NavItem itemId={1} isActive={activeItem === 1}>
-            Policy
-          </NavItem>
-          <NavItem itemId={2} isActive={activeItem === 2}>
-            Authentication
-          </NavItem>
-          <NavItem itemId={3} isActive={activeItem === 3}>
-            Network Services
-          </NavItem>
-          <NavItem itemId={4} isActive={activeItem === 4}>
-            Server
-          </NavItem>
-        </NavList>
-      </Nav>
-    );
-    const kebabDropdownItems = [
-      <DropdownItem>
-        <BellIcon /> Notifications
-      </DropdownItem>,
-      <DropdownItem>
-        <CogIcon /> Settings
-      </DropdownItem>
-    ];
-    const userDropdownItems = [
-      <DropdownItem>Link</DropdownItem>,
-      <DropdownItem component="button">Action</DropdownItem>,
-      <DropdownItem isDisabled>Disabled link</DropdownItem>,
-      <DropdownItem isDisabled component="button">
-        Disabled action
-      </DropdownItem>,
-      <DropdownSeparator />,
-      <DropdownItem>Separated link</DropdownItem>,
-      <DropdownItem component="button">Separated action</DropdownItem>
-    ];
-    const PageToolbar = <div>need to implement new toolbar</div>;
+        <Nav onSelect={this.onNavSelect} aria-label="Nav">
+          <NavList>
+            <NavItem itemId={0} isActive={activeItem === 0} onClick={this.toggleSearchFlag}>
+              Search
+            </NavItem>
+            <NavItem itemId={1} isActive={activeItem === 1} onClick={this.toggleHistoryFlag}>
+              History
+            </NavItem>
+            <NavItem itemId={2} isActive={activeItem === 2} onClick={this.handleLogOut}>
+              Log Out
+            </NavItem>
+           </NavList>
+        </Nav>
+      );
 
-    const Header = (
-      <PageHeader
-        logo={<Brand src={imgBrand} alt="Patternfly Logo" />}
-        toolbar={PageToolbar}
-        showNavToggle
-      />
-    );
-    const Sidebar = <PageSidebar nav={PageNav} />;
-    const pageId = 'main-content-page-layout-default-nav';
-    const PageSkipToContent = <SkipToContent href={`#${pageId}`}>Skip to content</SkipToContent>;
+      const Header = (
+        <PageHeader
+          logo="MBTA"
+          logoProps={logoProps}
+          headerTools={<PageHeaderTools> {this.state.username == null? (<a href="/">Sign In</a>) :("Signed In As : " + this.state.username)}</PageHeaderTools>}
+          showNavToggle
+          isNavOpen={isNavOpen}
+          onNavToggle={this.onNavToggle}
+        />
+      );
+      const Sidebar = <PageSidebar nav={PageNav} isNavOpen={isNavOpen} />;
 
-    const PageBreadcrumb = (
-      <Breadcrumb>
-        <BreadcrumbItem>Section home</BreadcrumbItem>
-        <BreadcrumbItem to="#">Section title</BreadcrumbItem>
-        <BreadcrumbItem to="#">Section title</BreadcrumbItem>
-        <BreadcrumbItem to="#" isActive>
-          Section landing
-        </BreadcrumbItem>
-      </Breadcrumb>
-    );
-
-    const toggleGroupItems = (
-      <React.Fragment>
-        <ToolbarItem>
-          <InputGroup>
-            <TextInput
-              name="inline-modifier-input"
-              id="inline-modifier-input"
-              type="search"
-              aria-label="search input example"
-              onChange={this.onInputChange}
-              value={inputValue}
-            />
-            <Button variant={ButtonVariant.control} aria-label="search button for search input">
-              <SearchIcon />
-            </Button>
-          </InputGroup>
-        </ToolbarItem>
-        <ToolbarGroup variant="filter-group">
-          <ToolbarItem>
-            <Select
-              aria-label="Select Input"
-              onToggle={this.onStatusToggle}
-              onSelect={this.onStatusSelect}
-              selections={statusSelected}
-              isExpanded={statusIsExpanded}
-            >
-              {this.statusOptions.map((option, index) => (
-                <SelectOption isDisabled={option.disabled} key={index} value={option.value} />
-              ))}
-            </Select>
-          </ToolbarItem>
-          <ToolbarItem>
-            <Select
-              aria-label="Select Input"
-              onToggle={this.onRiskToggle}
-              onSelect={this.onRiskSelect}
-              selections={riskSelected}
-              isExpanded={riskIsExpanded}
-            >
-              {this.riskOptions.map((option, index) => (
-                <SelectOption isDisabled={option.disabled} key={index} value={option.value} />
-              ))}
-            </Select>
-          </ToolbarItem>
-        </ToolbarGroup>
-      </React.Fragment>
-    );
-
-    const ToolbarItems = (
-      <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
-        {toggleGroupItems}
-      </ToolbarToggleGroup>
-    );
-
-    const panelContent = (
-      <DrawerPanelContent>
-        <DrawerHead>
-          <Title headingLevel="h2" size="xl">
-            node-{drawerPanelBodyContent}
-          </Title>
-          <DrawerActions>
-            <DrawerCloseButton onClick={this.onCloseDrawerClick} />
-          </DrawerActions>
-        </DrawerHead>
-        <DrawerPanelBody>
-          <Flex spaceItems={{ default: 'spaceItemsLg' }} direction={{ default: 'column' }}>
-            <FlexItem>
-              <p>
-                The content of the drawer really is up to you. It could have form fields, definition lists, text lists,
-                labels, charts, progress bars, etc. Spacing recommendation is 24px margins. You can put tabs in here,
-                and can also make the drawer scrollable.
-              </p>
-            </FlexItem>
-            <FlexItem>
-              <Progress value={drawerPanelBodyContent * 10} title="Title" />
-            </FlexItem>
-            <FlexItem>
-              <Progress value={drawerPanelBodyContent * 5} title="Title" />
-            </FlexItem>
-          </Flex>
-        </DrawerPanelBody>
-      </DrawerPanelContent>
-    );
-    const drawerContent = (
-      <React.Fragment>
-        <Toolbar id="inline-modifier-data-toolbar" className="pf-m-page-insets">
-          <ToolbarContent>{ToolbarItems}</ToolbarContent>
-        </Toolbar>
-        <DataList
-          aria-label="data list"
-          selectedDataListItemId={selectedDataListItemId}
-          onSelectDataListItem={this.onSelectDataListItem}
-        >
-          <DataListItem id="inline-modifier-item1">
-            <DataListItemRow>
-              <DataListItemCells
-                dataListCells={[
-                  <DataListCell key="primary content">
-                    <Flex direction={{ default: 'column' }}>
-                      <FlexItem>
-                        <p>patternfly</p>
-                        <small>
-                          Working repo for PatternFly 4 <a>https://pf4.patternfly.org/</a>
-                        </small>
-                      </FlexItem>
-                      <Flex>
-                        <FlexItem>
-                          <CodeBranchIcon /> 10
-                        </FlexItem>
-                        <FlexItem>
-                          <CodeIcon /> 4
-                        </FlexItem>
-                        <FlexItem>
-                          <CubeIcon /> 5
-                        </FlexItem>
-                        <FlexItem>Updated 2 days ago</FlexItem>
-                      </Flex>
-                    </Flex>
-                  </DataListCell>,
-                  <DataListAction alignRight>
-                    <Stack>
-                      <StackItem>
-                        <Button variant={ButtonVariant.secondary}>Secondary</Button>
-                      </StackItem>
-                      <StackItem>
-                        <Button variant={ButtonVariant.link}>Link Button</Button>
-                      </StackItem>
-                    </Stack>
-                  </DataListAction>
-                ]}
-              />
-            </DataListItemRow>
-          </DataListItem>
-          <DataListItem id="inline-modifier-item2">
-            <DataListItemRow>
-              <DataListItemCells
-                dataListCells={[
-                  <DataListCell key="primary content">
-                    <Flex direction={{ default: 'column' }}>
-                      <FlexItem>
-                        <p>patternfly-elements</p>
-                        <small>PatternFly elements</small>
-                      </FlexItem>
-                      <Flex>
-                        <FlexItem>
-                          <CodeBranchIcon /> 10
-                        </FlexItem>
-                        <FlexItem>
-                          <CodeIcon /> 4
-                        </FlexItem>
-                        <FlexItem>
-                          <CubeIcon /> 5
-                        </FlexItem>
-                        <FlexItem>
-                          <CheckCircleIcon /> 7
-                        </FlexItem>
-                        <FlexItem>
-                          <ExclamationTriangleIcon /> 5
-                        </FlexItem>
-                        <FlexItem>
-                          <TimesCircleIcon /> 5
-                        </FlexItem>
-                        <FlexItem>Updated 2 days ago</FlexItem>
-                      </Flex>
-                    </Flex>
-                  </DataListCell>,
-                  <DataListAction alignRight>
-                    <Stack>
-                      <StackItem>
-                        <Button variant={ButtonVariant.secondary}>Secondary</Button>
-                      </StackItem>
-                      <StackItem>
-                        <Button variant={ButtonVariant.link}>Link Button</Button>
-                      </StackItem>
-                    </Stack>
-                  </DataListAction>
-                ]}
-              />
-            </DataListItemRow>
-          </DataListItem>
-          <DataListItem id="inline-modifier-item3">
-            <DataListItemRow>
-              <DataListItemCells
-                dataListCells={[
-                  <DataListCell key="primary content">
-                    <Flex direction={{ default: 'column' }}>
-                      <FlexItem>
-                        <p>patternfly</p>
-                        <small>
-                          Working repo for PatternFly 4 <a>https://pf4.patternfly.org/</a>
-                        </small>
-                      </FlexItem>
-                      <Flex>
-                        <FlexItem>
-                          <CodeBranchIcon /> 10
-                        </FlexItem>
-                        <FlexItem>
-                          <CodeIcon /> 4
-                        </FlexItem>
-                        <FlexItem>
-                          <CubeIcon /> 5
-                        </FlexItem>
-                        <FlexItem>Updated 2 days ago</FlexItem>
-                      </Flex>
-                    </Flex>
-                  </DataListCell>,
-                  <DataListAction alignRight>
-                    <Stack>
-                      <StackItem>
-                        <Button variant={ButtonVariant.secondary}>Secondary</Button>
-                      </StackItem>
-                      <StackItem>
-                        <Button variant={ButtonVariant.link}>Link Button</Button>
-                      </StackItem>
-                    </Stack>
-                  </DataListAction>
-                ]}
-              />
-            </DataListItemRow>
-          </DataListItem>
-          <DataListItem id="inline-modifier-item4">
-            <DataListItemRow>
-              <DataListItemCells
-                dataListCells={[
-                  <DataListCell key="primary content">
-                    <Flex direction={{ default: 'column' }}>
-                      <FlexItem>
-                        <p>patternfly-elements</p>
-                        <small>PatternFly elements</small>
-                      </FlexItem>
-                      <Flex>
-                        <FlexItem>
-                          <CodeBranchIcon /> 10
-                        </FlexItem>
-                        <FlexItem>
-                          <CodeIcon /> 4
-                        </FlexItem>
-                        <FlexItem>
-                          <CubeIcon /> 5
-                        </FlexItem>
-                        <FlexItem>
-                          <CheckCircleIcon /> 7
-                        </FlexItem>
-                        <FlexItem>
-                          <ExclamationTriangleIcon /> 5
-                        </FlexItem>
-                        <FlexItem>
-                          <TimesCircleIcon /> 5
-                        </FlexItem>
-                        <FlexItem>Updated 2 days ago</FlexItem>
-                      </Flex>
-                    </Flex>
-                  </DataListCell>,
-                  <DataListAction alignRight>
-                    <Stack>
-                      <StackItem>
-                        <Button variant={ButtonVariant.secondary}>Secondary</Button>
-                      </StackItem>
-                      <StackItem>
-                        <Button variant={ButtonVariant.link}>Link Button</Button>
-                      </StackItem>
-                    </Stack>
-                  </DataListAction>
-                ]}
-              />
-            </DataListItemRow>
-          </DataListItem>
-        </DataList>
-      </React.Fragment>
-    );
+      const columns = ['Source', 'Destination', 'Date','Book'];
+      const bookingcols = ['Booking ID','Source','Destination','Journey Date','Booking Date'];
 
     return (
-      <React.Fragment>
-        <Page
-          header={Header}
-          sidebar={Sidebar}
-          isManagedSidebar
-          skipToContent={PageSkipToContent}
-          breadcrumb={PageBreadcrumb}
-          mainContainerId={pageId}
+       <React.Fragment>
+        <ToastContainer />
+        <Page header={Header} sidebar={Sidebar} mainContainerId={pageId}> 
+         {searchFlag && <div>   
+        <PageSection variant={PageSectionVariants.light} padding={{ default: 'padding', md: 'padding', lg: 'padding' }}>
+        <TextContent>
+            <Text component="h1" >Search</Text>
+            <Text component="p">Please enter the Journey details</Text>
+        </TextContent>
+        </PageSection>
+         <Divider component="div" />
+        <PageSection padding={{ default: 'Padding', sm: 'noPadding', md: 'padding', lg: 'padding' }}>  
+        <span id={titleTId} hidden>
+          Select a source
+        </span>
+        <Select
+          variant={SelectVariant.typeahead}
+          typeAheadAriaLabel="Source"
+          onToggle={this.onToggle}
+          onSelect={this.onSelect}
+          onClear={this.clearSelection}
+          onFilter={this.customFilter}
+          selections={selected}
+          isOpen={isOpen}
+          aria-labelledby={titleId}
+          placeholderText="Source"
         >
-          <PageSection variant={PageSectionVariants.light}>
-            <TextContent>
-              <Text component="h1">Main title</Text>
-              <Text component="p">
-                Body text should be Overpass Regular at 16px. It should have leading of 24px because <br />
-                of it’s relative line height of 1.5.
-              </Text>
-            </TextContent>
-          </PageSection>
-          <Divider component="div" />
-          <PageSection variant={PageSectionVariants.light} padding={{ default: 'noPadding' }}>
-            <Drawer isExpanded={isDrawerExpanded} isInline>
-              <DrawerContent panelContent={panelContent}>
-                <DrawerContentBody>{drawerContent}</DrawerContentBody>
-              </DrawerContent>
-            </Drawer>
-          </PageSection>
-        </Page>
-      </React.Fragment>
+          {this.options}
+        </Select>
+     
+        <span id={titleId} hidden>
+          Select a source
+        </span>
+        <Select
+          variant={SelectVariant.typeahead}
+          typeAheadAriaLabel="Destination"
+          onToggle={this.onTToggle}
+          onSelect={this.onTSelect}
+          onClear={this.clearTSelection}
+          onFilter={this.customTFilter}
+          selections={Tselected}
+          isOpen={isTOpen}
+          aria-labelledby={titleTId}
+          placeholderText="Destination"
+          isRequired
+        >
+          {this.Toptions}
+        </Select>
+        <DatePicker validators={[rangeValidator]} onChange={this.onDateChange}/>
+
+        <Button variant="link" isLarge onClick={this.onSearchClick}>Search to action <ArrowRightIcon/></Button>
+        
+        </PageSection>
+
+        <PageSection>
+                <TableComposable aria-label="Actions table">
+            <Thead>
+                <Tr>
+                <Th>{columns[0]}</Th>
+                <Th>{columns[1]}</Th>
+                <Th>{columns[2]}</Th>
+                <Th>{columns[3]}</Th>
+                </Tr>
+            </Thead>
+            <Tbody>
+                {avail.map((item, i) => (
+                <Tr key={`row-${i}`}>
+                    <Td dataLabel={columns[0]}>
+                        {item.source}
+                    </Td>
+                    <Td dataLabel={columns[1]}>
+                        {item.destination}
+                    </Td>
+                    <Td dataLabel={columns[2]}>
+                        {item.datetime}
+                    </Td>                
+                    <Td>
+                    <Button variant="secondary" isSmall onClick={() => this.onItemClick(item)}>Book</Button>
+                    </Td>                  
+                </Tr>
+                ))}
+            </Tbody>
+            </TableComposable>
+
+
+        </PageSection>
+        </div>}
+        {bookHistoryFlag && bookings.length === 0 &&
+                   <PageSection>
+                   <EmptyState>
+                      <EmptyStateIcon icon={SearchIcon} />
+                      <Title size="lg" headingLevel="h4">
+                        No results found
+                      </Title>
+                      <EmptyStateBody>
+                        No results match the filter criteria. Remove all filters or clear all filters to show results.
+                      </EmptyStateBody>
+                      <EmptyStatePrimary>
+                        <Button variant="link">Clear all filters</Button>
+                      </EmptyStatePrimary>
+                    </EmptyState>
+           </PageSection>}          
+        {bookHistoryFlag && bookings !== [] &&
+                   <PageSection>
+                   <TableComposable aria-label="Bookings table">
+               <Thead>
+                   <Tr>
+                   <Th>{bookingcols[0]}</Th>
+                   <Th>{bookingcols[1]}</Th>
+                   <Th>{bookingcols[2]}</Th>
+                   <Th>{bookingcols[3]}</Th>
+                   <Th>{bookingcols[4]}</Th>
+                   </Tr>
+               </Thead>
+               <Tbody>
+                   {bookings.map((item, i) => (
+                   <Tr key={`row-${i}`}>
+                       <Td dataLabel={bookingcols[0]}>
+                           {item._id}
+                       </Td>
+                       <Td dataLabel={bookingcols[1]}>
+                           {item.ticketFrom}
+                       </Td>
+                       <Td dataLabel={bookingcols[2]}>
+                           {item.ticketTo}
+                       </Td>                
+                       <Td dataLabel={bookingcols[3]}>
+                           {item.bookeddate}
+                       </Td>
+                       <Td dataLabel={bookingcols[4]}>
+                           {item.creationdate}
+                       </Td>                 
+                   </Tr>
+                   ))}
+               </Tbody>
+               </TableComposable>
+   
+   
+           </PageSection>}
+           
+            </Page>
+            </React.Fragment>
     );
   }
 }

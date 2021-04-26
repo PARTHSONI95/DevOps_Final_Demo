@@ -1,8 +1,8 @@
 import React from 'react';
 import "@patternfly/react-core/dist/styles/base.css";
-import brandImg from './brandImgColor.svg';
-import { useHistory } from 'react-router-dom';
-
+import brandImg from './mbta-logo@logotyp.us.svg';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import {
   LoginFooterItem,
@@ -10,8 +10,8 @@ import {
   LoginMainFooterBandItem,
   LoginMainFooterLinksItem,
   LoginPage,
-  BackgroundImageSrc,
-  ListItem
+  ListItem,
+  Button
 } from '@patternfly/react-core';
 import ExclamationCircleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-circle-icon';
 
@@ -26,8 +26,27 @@ export default class SimpleLoginPage extends React.Component {
       isValidUsername: true,
       passwordValue: '',
       isValidPassword: true,
-      isRememberMeChecked: false
+      isRememberMeChecked: false,
+      user: localStorage.getItem('role'),
+      token: localStorage.getItem('bustoken'),
+      FLASK_URL: process.env.REACT_APP_URL || 'http://localhost:5000'
     };
+
+    this.componentDidMount = () => {
+      console.log("User Aleady Logged In : " + this.state.user);
+      // verify user/pwd
+      if (this.state.user !== null) {
+        alert('Already logged in by user : ' + this.state.user);
+        this.props.history.replace('/home');
+      } 
+      
+      toast("Hello");
+    
+    }
+
+    const sleep = (milliseconds) => {
+      return new Promise(resolve => setTimeout(resolve, milliseconds))
+    }
 
     this.handleUsernameChange = value => {
       this.setState({ usernameValue: value });
@@ -50,12 +69,8 @@ export default class SimpleLoginPage extends React.Component {
       const storedUser = localStorage.getItem('role');
       console.log("Before User" + storedUser);
       // verify user/pwd
-      if (storedUser != null) {
-        alert('Already logged in by user : ' + storedUser)
-        return;
-      }
 
-      if (typeof (this.state.usernameValue) === 'undefined' || typeof (this.state.passwordValue) === 'undefined' || this.state.usernameValue == '' || this.state.passwordValue == '') {
+      if (typeof (this.state.usernameValue) === 'undefined' || typeof (this.state.passwordValue) === 'undefined' || this.state.usernameValue === '' || this.state.passwordValue === '') {
         alert('Please enter valid details');
         return;
       }
@@ -74,7 +89,8 @@ export default class SimpleLoginPage extends React.Component {
           },
           body: JSON.stringify(paramdict)
         }
-        const response = await fetch("http://localhost:5000/userSignIn", config);
+        console.log(this.state.FLASK_URL);
+        const response = await fetch(this.state.FLASK_URL+'/userSignIn', config);
         //const json = await response.json()
         if (response.ok) {
           console.log("success on send.");
@@ -86,16 +102,20 @@ export default class SimpleLoginPage extends React.Component {
             const data = await response.json();
             console.log("on reply:")
             console.log(data);
-            if(data == "User Already Sign In"){
+            if(data === "User Already Sign In"){
               alert('Already Logged In')
+              this.props.history.push('/home');
               return "Already Logged In";
-            }else if(data == "Invalid Login"){
+
+            }else if(data === "Invalid Login"){
               alert('Invalid Login');
               return;
             }else{
-            localStorage.setItem('role', data.username)
-            console.log(data.username)
-            alert('Login Successful');
+            localStorage.setItem('role', data['user'].username);
+            localStorage.setItem('bustoken',data['token']);
+            console.log(data['token']);
+            toast("Login Successful");
+            await sleep(5000);
             this.props.history.push('/home');
             return "<h1>Login Successful</h1>";
           }
@@ -115,6 +135,79 @@ export default class SimpleLoginPage extends React.Component {
     this.handleHistory = () => {
         this.props.history.push('/signup');
     }
+
+    this.images = {
+      'xs': '/assets/images/pfbg_576.jpg',
+      'xs2x': '/assets/images/pfbg_576@2x.jpg',
+      'sm': '/assets/images/pfbg_768.jpg',
+      'sm2x': '/assets/images/pfbg_768@2x.jpg',
+      'lg': '/assets/images/pfbg_1200.jpg'
+    };
+
+    this.handleDirectLogin = async () => {
+      //get token value from local cache if already present
+      //alert('Token is ' + this.state.token);
+      if (this.state.token === null) {
+        alert('No Token found - Please login once');
+        return;
+      }
+
+      const paramdict = {
+        'x-access-token': this.state.token,
+      }
+  
+      try {
+        const config = {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(paramdict)
+        }
+        const response = await fetch(this.state.FLASK_URL+'/fastLogin', config);
+        //const json = await response.json()
+        if (response.ok) {
+          console.log("success on send.");
+  
+        } else {
+          alert("launch: failure on send!");
+        }
+        try {
+            const data = await response.json();
+            console.log("on reply:")
+            console.log(data);
+            if(data === "User Already Sign In"){
+              alert('Already Logged In')
+              this.props.history.push('/home');
+              return "Already Logged In";
+
+            }else if(data === "Token is invalid"){
+              alert('Token is invalid');
+              return;
+            }else{
+            localStorage.setItem('role', data['user'].username);
+            console.log(data['token']);
+            this.props.history.push('/home');
+            alert('Login Successful');
+            return "<h1>Login Successful</h1>";
+          }
+  
+  
+        } catch (err) {
+          console.log(err);
+          alert("exception on reply!");
+        }
+  
+      } catch (error) {
+  
+      }
+
+
+      
+
+    }
+
   }
 
   render() {
@@ -162,7 +255,7 @@ export default class SimpleLoginPage extends React.Component {
     );
     const forgotCredentials = (
       <LoginMainFooterBandItem>
-        <a href="#">Forgot username or password?</a>
+        <Button onClick={() => this.handleDirectLogin()}>Direct Login ? Click here...</Button>
       </LoginMainFooterBandItem>
     );
 
@@ -200,31 +293,25 @@ export default class SimpleLoginPage extends React.Component {
       />
     );
 
-    const images = {
-      lg: '/assets/images/pfbg_1200.jpg',
-      sm: '/assets/images/pfbg_768.jpg',
-      sm2x: '/assets/images/pfbg_768@2x.jpg',
-      xs: '/assets/images/pfbg_576.jpg',
-      xs2x: '/assets/images/pfbg_576@2x.jpg'
-    };
-
+  
     return (
       
         
       <LoginPage
         footerListVariants="inline"
         brandImgSrc={brandImg}
-        brandImgAlt="PatternFly logo"
-        backgroundImgSrc={images} 
+        brandImgAlt="Brand logo"
+        backgroundImgSrc={this.images} 
         backgroundImgAlt="Images"
         footerListItems={listItem}
-        textContent="Book your UBER bus seat online within a minute"
+        textContent="Book your BUS seat online within a minute"
         loginTitle="Log in to your account"
         loginSubtitle="Please use your single sign-on LDAP credentials"
         socialMediaLoginContent={socialMediaLoginContent}
         signUpForAccountMessage={signUpForAccountMessage}
         forgotCredentials={forgotCredentials}
       >
+        <ToastContainer />
         {loginForm}
         </LoginPage>
     );
