@@ -62,6 +62,7 @@ jobs:
       - run:
           name: Docker Frontend Operations
           command: |
+            cd uber-frontend
             REACT_APP_URL=http://`kubectl get service/uber-backend -o jsonpath={.status.loadBalancer.ingress..hostname}`
             docker build --build-arg REACT_APP_URL=$REACT_APP_URL -f uber-frontend/Dockerfile -t $DockerUsername/uberbusapp .
             sleep 120
