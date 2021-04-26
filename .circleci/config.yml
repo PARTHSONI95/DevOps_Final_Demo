@@ -39,6 +39,7 @@ jobs:
       - run:
           name: Docker Backend Operations
           command: |
+            cd uber-backend
             echo "LOG IN COMPLETED" | docker login -u=$DockerUsername -p=$DockerPassword
             ls -al
             docker build -f uber-backend/Dockerfile -t $DockerUsername/uberbusapp:backend .
