@@ -39,9 +39,10 @@ jobs:
       - run:
           name: Docker Backend Operations
           command: |
+            cd uber-backend
             echo "LOG IN COMPLETED" | docker login -u=$DockerUsername -p=$DockerPassword
             ls -al
-            docker build -f uber-backend/Dockerfile -t $DockerUsername/uberbusapp:backend .
+            docker build -f Dockerfile -t $DockerUsername/uberbusapp:backend .
             sleep 120
             docker push $DockerUsername/uberbusapp:backend
       - run:
@@ -63,10 +64,10 @@ jobs:
           name: Docker Frontend Operations
           command: |
             cd uber-frontend
-            REACT_APP_URL=http://`kubectl get service/uber-backend -o jsonpath={.status.loadBalancer.ingress..hostname}`
-            docker build --build-arg REACT_APP_URL=$REACT_APP_URL -f Dockerfile -t $DockerUsername/uberbusapp .
+            REACT_APP_URL=http://`kubectl get service/uber-backend-lb -o jsonpath={.status.loadBalancer.ingress..hostname}`
+            docker build --build-arg REACT_APP_URL=$REACT_APP_URL -f Dockerfile -t $DockerUsername/uberbusapp:frontend .
             sleep 120
-            docker push $DockerUsername/uberbusapp
+            docker push $DockerUsername/uberbusapp:frontend
       - run:
           name: Starting Kubernetes
           command: |
@@ -104,3 +105,5 @@ workflows:
     jobs:
       - build
       - build_frontend_deploy
+          requres:
+            -build

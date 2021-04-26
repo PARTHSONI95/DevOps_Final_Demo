@@ -19,7 +19,7 @@ spec:
         app: uber-frontend 
     spec:
       containers:
-        - image: yashthakkar248/uberbusapp
+        - image: yashthakkar248/uberbusapp:frontend
           imagePullPolicy: Always 
           name: uber-frontend 
           ports:

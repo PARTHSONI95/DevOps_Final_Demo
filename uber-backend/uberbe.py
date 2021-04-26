@@ -29,7 +29,7 @@ import jwt
 #mongo_client = MongoClient("mongodb+srv://admin:admin@tweets.8ugzv.mongodb.net/tweets?retryWrites=true&w=majority")
 
 mongo_client = MongoClient(
-    "mongodb+srv://parth:4mF294RcpqMutJk7@cluster0.esm5u.mongodb.net/uberdb?retryWrites=true&w=majority")
+    "mongodb+srv://parth:4mF294RcpqMutJk7@cluster0.esm5u.mongodb.net/uberdb?authSource=admin&retryWrites=true&w=majority")
 
 app = Flask(__name__)
 CORS(app)
