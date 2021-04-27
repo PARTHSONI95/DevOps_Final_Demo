@@ -37,7 +37,7 @@ To destroy the infrastucture -
 $ terraform destroy -auto-approve 
 ```
 
-![Automation](https://github.com/PARTHSONI95/UberBusApp/blob/main/circle.png)
+![Automation](https://github.com/PARTHSONI95/UberBusApp/blob/main/circleci.png)
 
 ### CI/CD automation using CircleCI
 
